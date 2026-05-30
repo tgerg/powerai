@@ -12,4 +12,5 @@ frontend/build/
 
 # Environment
 .env
-*.env
+*.envconfig.py
+secret.key
