@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: powerai
+    env: python
+    buildCommand: "pip install -r requirements.txt && cd frontend && npm install && npm run build"
+    startCommand: "cd backend && python app.py"
+    envVars:
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: powerai-db
+          property: connectionString
+      - key: GROQ_API_KEY
+        sync: false
+
+databases:
+  - name: powerai-db
+    databaseName: powerai
+    plan: free

@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PowerAI — AI-powered analytics for everyone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #0d0d12;
+      --ink2:      #3a3a4a;
+      --ink3:      #8a8a9a;
+      --paper:     #fafaf8;
+      --surface:   #ffffff;
+      --rule:      #e8e8e4;
+      --accent:    #4a3fcf;
+      --accent-lt: #ede9ff;
+      --green:     #166534;
+      --green-lt:  #dcfce7;
+      --serif:     'Instrument Serif', Georgia, serif;
+      --mono:      'DM Mono', monospace;
+      --sans:      'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      background: rgba(250,250,248,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 22px;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.3px;
+    }
+    .nav-logo span { color: var(--accent); font-style: italic; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--ink2);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      background: var(--accent);
+      color: white;
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      background: #3730a3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(74,63,207,0.3);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      border-color: var(--ink2);
+      background: var(--surface);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 160px 48px 100px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-lt);
+      padding: 5px 12px;
+      border-radius: 99px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero-eyebrow-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .hero-headline {
+      font-family: var(--serif);
+      font-size: clamp(42px, 5vw, 62px);
+      line-height: 1.1;
+      letter-spacing: -1px;
+      color: var(--ink);
+      margin-bottom: 24px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .hero-headline em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: 17px;
+      color: var(--ink2);
+      line-height: 1.65;
+      margin-bottom: 36px;
+      font-weight: 300;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    .hero-social-proof {
+      margin-top: 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+
+    .hero-social-proof-text {
+      font-size: 12px;
+      color: var(--ink3);
+    }
+
+    .hero-stars {
+      color: #f59e0b;
+      font-size: 13px;
+      letter-spacing: 2px;
+    }
+
+    /* ── Dashboard mockup ── */
+    .hero-visual {
+      animation: fadeIn 0.8s 0.3s ease both;
+      position: relative;
+    }
+
+    .mockup-window {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.06);
+      overflow: hidden;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .mockup-titlebar {
+      background: #f5f5f3;
+      border-bottom: 1px solid var(--rule);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mockup-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+
+    .mockup-content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .mockup-query-bar {
+      background: #f9f9f7;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mockup-query-bar::before {
+      content: "Ask";
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--ink3);
+      flex-shrink: 0;
+    }
+
+    .mockup-charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .mockup-chart-card {
+      background: #f9f9f7;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 90px;
+    }
+
+    .mockup-chart-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--ink3);
+      margin-bottom: 10px;
+    }
+
+    .mockup-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 48px;
+    }
+
+    .mockup-bar {
+      flex: 1;
+      background: var(--accent);
+      border-radius: 3px 3px 0 0;
+      opacity: 0.8;
+    }
+
+    .mockup-line-svg {
+      width: 100%;
+      height: 48px;
+    }
+
+    .mockup-insight-card {
+      background: var(--accent-lt);
+      border: 1px solid rgba(74,63,207,0.15);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 10px;
+      color: var(--accent);
+      line-height: 1.5;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .mockup-insight-num {
+      font-family: var(--mono);
+      font-size: 9px;
+      opacity: 0.6;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── Ticker ── */
+    .ticker-wrap {
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      overflow: hidden;
+      padding: 14px 0;
+      background: var(--surface);
+    }
+
+    .ticker-track {
+      display: flex;
+      gap: 0;
+      animation: ticker 30s linear infinite;
+      width: max-content;
+    }
+
+    .ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 40px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink3);
+      white-space: nowrap;
+    }
+
+    .ticker-item span {
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 10px;
+    }
+
+    /* ── Section ── */
+    section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 100px 48px;
+    }
+
+    .section-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .section-headline {
+      font-family: var(--serif);
+      font-size: clamp(32px, 4vw, 48px);
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 20px;
+    }
+
+    .section-headline em { font-style: italic; color: var(--accent); }
+
+    .section-sub {
+      font-size: 16px;
+      color: var(--ink2);
+      font-weight: 300;
+      max-width: 520px;
+      line-height: 1.7;
+    }
+
+    /* ── How it works ── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-top: 64px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .step {
+      background: var(--surface);
+      padding: 40px 36px;
+      position: relative;
+    }
+
+    .step-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink3);
+      margin-bottom: 24px;
+      letter-spacing: 1px;
+    }
+
+    .step-icon {
+      width: 44px; height: 44px;
+      background: var(--accent-lt);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .step-title {
+      font-family: var(--serif);
+      font-size: 20px;
+      margin-bottom: 10px;
+      letter-spacing: -0.2px;
+    }
+
+    .step-desc {
+      font-size: 14px;
+      color: var(--ink2);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    /* ── Features ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+      margin-top: 64px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      padding: 40px 36px;
+      transition: background 0.2s;
+    }
+
+    .feature-card:hover { background: #fdfdf9; }
+
+    .feature-icon {
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .feature-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.2px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: var(--ink2);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    .feature-tag {
+      display: inline-block;
+      margin-top: 14px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--green);
+      background: var(--green-lt);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* ── Comparison ── */
+    .comparison-wrap {
+      margin-top: 64px;
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .comparison-table th {
+      padding: 20px 28px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--surface);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .comparison-table th:nth-child(2) {
+      background: var(--accent-lt);
+      color: var(--accent);
+    }
+
+    .comparison-table td {
+      padding: 16px 28px;
+      font-size: 14px;
+      color: var(--ink2);
+      border-bottom: 1px solid var(--rule);
+      vertical-align: top;
+    }
+
+    .comparison-table tr:last-child td { border-bottom: none; }
+
+    .comparison-table td:nth-child(2) {
+      background: rgba(74,63,207,0.03);
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .check { color: #16a34a; }
+    .cross { color: #dc2626; }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: var(--ink);
+      color: white;
+      border-radius: 24px;
+      padding: 80px;
+      text-align: center;
+      margin: 0 48px 100px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: "";
+      position: absolute;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(74,63,207,0.4) 0%, transparent 70%);
+      top: -200px; right: -100px;
+      pointer-events: none;
+    }
+
+    .cta-headline {
+      font-family: var(--serif);
+      font-size: clamp(32px, 4vw, 52px);
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .cta-headline em { font-style: italic; color: #a78bfa; }
+
+    .cta-sub {
+      font-size: 16px;
+      color: rgba(255,255,255,0.6);
+      font-weight: 300;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      position: relative;
+    }
+
+    .btn-white {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      background: white;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-white:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(255,255,255,0.2);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover {
+      border-color: rgba(255,255,255,0.4);
+      color: white;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: var(--serif);
+      font-size: 18px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .footer-logo span { font-style: italic; color: var(--accent); }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--ink3);
+    }
+
+    /* ── Divider ── */
+    .full-rule {
+      border: none;
+      border-top: 1px solid var(--rule);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 120px 24px 60px; gap: 40px; }
+      .hero-visual { display: none; }
+      section { padding: 60px 24px; }
+      .steps { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .cta-section { margin: 0 24px 60px; padding: 48px 32px; }
+      footer { flex-direction: column; gap: 16px; text-align: center; padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <a class="nav-logo" href="#">Power<span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#vs-powerbi">vs Power BI</a></li>
+    </ul>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <a class="btn-secondary" href="/app">Sign in</a>
+      <a class="btn-primary" href="/app">Get started free →</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow">
+        <div class="hero-eyebrow-dot"></div>
+        Now in beta
+      </div>
+      <h1 class="hero-headline">
+        Ask your data anything.<br>
+        <em>No SQL required.</em>
+      </h1>
+      <p class="hero-sub">
+        Upload a CSV, Excel file, or connect your database. PowerAI turns plain English questions into instant charts, insights, and dashboards — in seconds.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="/app">Start for free →</a>
+        <a class="btn-secondary" href="#how-it-works">See how it works</a>
+      </div>
+      <div class="hero-social-proof">
+        <div class="hero-stars">★★★★★</div>
+        <p class="hero-social-proof-text">Built for analysts, ops teams, and anyone tired of waiting on reports</p>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="mockup-window">
+        <div class="mockup-titlebar">
+          <div class="mockup-dot" style="background:#ff5f57"></div>
+          <div class="mockup-dot" style="background:#ffbd2e"></div>
+          <div class="mockup-dot" style="background:#28c840"></div>
+          <span style="flex:1; text-align:center; font-size:11px; color:#9ca3af; font-family:var(--mono)">powerai.app</span>
+        </div>
+        <div class="mockup-content">
+          <div class="mockup-query-bar">
+            Show me total revenue by region this quarter
+          </div>
+          <div class="mockup-charts">
+            <div class="mockup-chart-card">
+              <div class="mockup-chart-label">Revenue by Region</div>
+              <div class="mockup-bars">
+                <div class="mockup-bar" style="height:70%"></div>
+                <div class="mockup-bar" style="height:45%"></div>
+                <div class="mockup-bar" style="height:85%"></div>
+                <div class="mockup-bar" style="height:55%"></div>
+                <div class="mockup-bar" style="height:60%"></div>
+              </div>
+            </div>
+            <div class="mockup-chart-card">
+              <div class="mockup-chart-label">Monthly Trend</div>
+              <svg class="mockup-line-svg" viewBox="0 0 120 48" preserveAspectRatio="none">
+                <polyline points="0,40 20,32 40,28 60,18 80,22 100,12 120,8"
+                  fill="none" stroke="#4a3fcf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="0,40 20,32 40,28 60,18 80,22 100,12 120,8 120,48 0,48"
+                  fill="rgba(74,63,207,0.08)" stroke="none"/>
+              </svg>
+            </div>
+          </div>
+          <div class="mockup-insight-card">
+            <span class="mockup-insight-num">01</span>
+            North region leads with 34% of total revenue, outperforming all other regions by 2×
+          </div>
+          <div class="mockup-insight-card">
+            <span class="mockup-insight-num">02</span>
+            Revenue grew 28% month-over-month — the highest rate in the last 6 periods
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ticker -->
+  <div class="ticker-wrap">
+    <div class="ticker-track">
+      <div class="ticker-item"><span>✦</span> Upload CSV, Excel, or JSON</div>
+      <div class="ticker-item"><span>✦</span> Connect PostgreSQL & MySQL</div>
+      <div class="ticker-item"><span>✦</span> Ask in plain English</div>
+      <div class="ticker-item"><span>✦</span> AI picks the right chart type</div>
+      <div class="ticker-item"><span>✦</span> Pin to persistent dashboards</div>
+      <div class="ticker-item"><span>✦</span> Cross-filter with one click</div>
+      <div class="ticker-item"><span>✦</span> Export results as CSV</div>
+      <div class="ticker-item"><span>✦</span> No SQL knowledge needed</div>
+      <div class="ticker-item"><span>✦</span> Upload CSV, Excel, or JSON</div>
+      <div class="ticker-item"><span>✦</span> Connect PostgreSQL & MySQL</div>
+      <div class="ticker-item"><span>✦</span> Ask in plain English</div>
+      <div class="ticker-item"><span>✦</span> AI picks the right chart type</div>
+      <div class="ticker-item"><span>✦</span> Pin to persistent dashboards</div>
+      <div class="ticker-item"><span>✦</span> Cross-filter with one click</div>
+      <div class="ticker-item"><span>✦</span> Export results as CSV</div>
+      <div class="ticker-item"><span>✦</span> No SQL knowledge needed</div>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <section id="how-it-works">
+    <div class="reveal">
+      <p class="section-eyebrow">How it works</p>
+      <h2 class="section-headline">From data to insight<br>in <em>three steps</em></h2>
+      <p class="section-sub">No training. No setup. No analyst required. Just upload and ask.</p>
+    </div>
+
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-icon">📁</div>
+        <h3 class="step-title">Upload your data</h3>
+        <p class="step-desc">Drop in a CSV, Excel file, or JSON export. Or connect directly to your PostgreSQL or MySQL database. PowerAI reads your schema automatically.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-icon">💬</div>
+        <h3 class="step-title">Ask a question</h3>
+        <p class="step-desc">Type a question in plain English — "show me revenue by region" or "which products are trending up?" — and PowerAI writes the SQL for you.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-icon">📊</div>
+        <h3 class="step-title">Get your dashboard</h3>
+        <p class="step-desc">Pin results to named dashboards. Resize panels, rename them, and filter across charts with one click. Share with your team.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="full-rule" />
+
+  <!-- Features -->
+  <section id="features">
+    <div class="reveal">
+      <p class="section-eyebrow">Features</p>
+      <h2 class="section-headline">Everything you need.<br><em>Nothing you don't.</em></h2>
+      <p class="section-sub">PowerAI is built for people who need answers fast, not another tool to learn.</p>
+    </div>
+
+    <div class="features-grid reveal">
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3 class="feature-title">AI-generated SQL</h3>
+        <p class="feature-desc">Ask questions in plain English. PowerAI converts them to SQL automatically, with auto-retry if the first attempt fails. The generated query is always visible so you stay in control.</p>
+        <span class="feature-tag">Powered by Llama 3.3</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💡</div>
+        <h3 class="feature-title">Instant AI insights</h3>
+        <p class="feature-desc">The moment you upload a file, PowerAI analyzes your data and surfaces 5 specific, business-relevant observations — trends, outliers, and opportunities you might have missed.</p>
+        <span class="feature-tag">Auto on upload</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3 class="feature-title">Smart chart selection</h3>
+        <p class="feature-desc">PowerAI picks the right visualization for each query — bar for comparisons, line for trends, pie for proportions, scatter for correlations. No manual configuration needed.</p>
+        <span class="feature-tag">4 chart types</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔗</div>
+        <h3 class="feature-title">Live database connections</h3>
+        <p class="feature-desc">Connect directly to PostgreSQL or MySQL. Credentials are encrypted at rest. Query live production data without exporting a single file.</p>
+        <span class="feature-tag">PostgreSQL · MySQL</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">◫</div>
+        <h3 class="feature-title">Persistent dashboards</h3>
+        <p class="feature-desc">Pin query results to named dashboards. Panels survive refreshes, can be renamed, resized, and reorganized. Create multiple dashboards for different projects or time periods.</p>
+        <span class="feature-tag">Saves automatically</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3 class="feature-title">Cross-filtering</h3>
+        <p class="feature-desc">Click any bar, point, or slice on a dashboard chart to filter every other panel simultaneously. Explore your data interactively without writing a single new query.</p>
+        <span class="feature-tag">Power BI's killer feature</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="full-rule" />
+
+  <!-- Comparison -->
+  <section id="vs-powerbi">
+    <div class="reveal">
+      <p class="section-eyebrow">PowerAI vs Power BI</p>
+      <h2 class="section-headline">Same insights.<br><em>A fraction of the friction.</em></h2>
+      <p class="section-sub">Power BI is powerful — but it assumes you have days to set it up and a data team to maintain it. PowerAI doesn't.</p>
+    </div>
+
+    <div class="comparison-wrap reveal">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th style="width:36%">Capability</th>
+            <th style="width:32%">PowerAI</th>
+            <th style="width:32%">Power BI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Time to first insight</td>
+            <td><span class="check">✓</span> Under 60 seconds</td>
+            <td><span class="cross">✗</span> Hours of setup</td>
+          </tr>
+          <tr>
+            <td>Query language</td>
+            <td><span class="check">✓</span> Plain English</td>
+            <td><span class="cross">✗</span> DAX (steep learning curve)</td>
+          </tr>
+          <tr>
+            <td>Software install required</td>
+            <td><span class="check">✓</span> Browser only</td>
+            <td><span class="cross">✗</span> Desktop app required</td>
+          </tr>
+          <tr>
+            <td>AI-generated insights on upload</td>
+            <td><span class="check">✓</span> Automatic</td>
+            <td><span class="cross">✗</span> Not available</td>
+          </tr>
+          <tr>
+            <td>Cross-filtering</td>
+            <td><span class="check">✓</span> Built in</td>
+            <td><span class="check">✓</span> Built in</td>
+          </tr>
+          <tr>
+            <td>Persistent dashboards</td>
+            <td><span class="check">✓</span> Yes</td>
+            <td><span class="check">✓</span> Yes (requires workspace)</td>
+          </tr>
+          <tr>
+            <td>Sharing</td>
+            <td><span class="check">✓</span> Coming soon</td>
+            <td><span class="cross">✗</span> Requires recipient license</td>
+          </tr>
+          <tr>
+            <td>Cost</td>
+            <td><span class="check">✓</span> Free to start</td>
+            <td><span class="cross">✗</span> $10–$20/user/month</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-section reveal">
+    <h2 class="cta-headline">Stop waiting for<br>the <em>data team.</em></h2>
+    <p class="cta-sub">Upload your first file and get answers in under a minute. No credit card, no setup, no SQL.</p>
+    <div class="cta-actions">
+      <a class="btn-white" href="/app">Get started free →</a>
+      <a class="btn-ghost" href="#how-it-works">See how it works</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <a class="footer-logo" href="#">Power<span>AI</span></a>
+    <p class="footer-copy">Built with Flask, React, and Groq · © 2025 PowerAI</p>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
