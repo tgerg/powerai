@@ -214,6 +214,7 @@ def register():
             )
         return jsonify({"message": "User created"})
     except Exception as e:
+        print(f"REGISTER ERROR: {str(e)}")  # ADD THIS
         return jsonify({"error": f"Registration failed: {str(e)}"}), 500
 
 
