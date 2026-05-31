@@ -1,8 +1,9 @@
 backend/config.py
 backend/secret.key
-backend/.env
 backend/operations.db
+backend/.env
 venv/
+__pycache__/
+*.pyc
 frontend/node_modules/
 frontend/build/
-__pycache__/
