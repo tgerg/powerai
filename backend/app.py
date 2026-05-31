@@ -11,7 +11,11 @@ import json
 import os
 
 from database import engine
-from config import GROQ_API_KEY
+
+try:
+    from config import GROQ_API_KEY
+except ImportError:
+    GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 
 # ─────────────────────────────────────────
 # App Setup
@@ -399,9 +403,9 @@ def query():
             """
         else:
             prompt = f"""
-            You are an expert data analyst. The table '{table_name}' has columns: {schema}.
-            Convert this question into a valid SQL query.
-            Question: "{q}"
+            You are an expert data analyst. The table '{table_name}' has these columns: {schema}.
+            Convert this question into a valid SQL query compatible with both SQLite and PostgreSQL.
+            Question: "{question}"
             Only return SQL. No explanation.
             """
         response = client.chat.completions.create(
