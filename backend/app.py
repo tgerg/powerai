@@ -11,7 +11,11 @@ import json
 import os
 
 from database import engine
-from config import GROQ_API_KEY
+
+try:
+    from config import GROQ_API_KEY
+except ImportError:
+    GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 
 
 # ─────────────────────────────────────────
