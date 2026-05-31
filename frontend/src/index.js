@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import axios from "axios";
 
-axios.defaults.baseURL = "http://127.0.0.1:5001";
+axios.defaults.baseURL = window.location.origin;
 
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
