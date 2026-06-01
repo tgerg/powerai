@@ -1,5 +1,19 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+import AuthPage from "./AuthPage";
+import Sidebar from "./Sidebar";
+import QueryBox from "./QueryBox";
+import ChartView from "./ChartView";
+import ResultsTable from "./ResultsTable";
+import Insights from "./Insights";
+import DashboardView from "./DashboardView";
+import Suggestions from "./Suggestions";
+import FileSwitcher from "./FileSwitcher";
+import PinModal from "./PinModal";
+import ConnectionView from "./ConnectionView";
+import ConnectionModal from "./ConnectionModal";
+
 function App() {
-  // ALL state and effects must be here before any returns
   const [loggedIn, setLoggedIn] = useState(false);
   const [authReady, setAuthReady] = useState(false);
   const [data, setData] = useState(null);
@@ -40,9 +54,11 @@ function App() {
       .catch(() => {});
   }, [loggedIn]);
 
-  // Early returns after all hooks
+  // ── Early returns after all hooks ──
   if (!authReady) return null;
   if (!loggedIn) return <AuthPage onAuth={() => setLoggedIn(true)} />;
+
+  // ── Handlers ──
 
   const loadConnections = () => {
     axios.get("/connections")
@@ -50,7 +66,6 @@ function App() {
       .catch(() => {});
   };
 
-  // Dashboard handlers
   const createDashboard = async (name) => {
     const res = await axios.post("/dashboards", { name });
     const newD = { id: res.data.id, name };
@@ -71,7 +86,6 @@ function App() {
     if (activeDashboard?.id === id) setActiveDashboard(prev => ({ ...prev, name }));
   };
 
-  // Connection handlers
   const deleteConnection = async (id) => {
     await axios.delete(`/connections/${id}`);
     setConnections(prev => prev.filter(c => c.id !== id));
@@ -81,7 +95,6 @@ function App() {
     }
   };
 
-  // Pin to dashboard
   const pinToBoard = async (dashboard, panelData, sourceName) => {
     await axios.post(`/dashboards/${dashboard.id}/panels`, {
       question: panelData.question,
@@ -95,7 +108,6 @@ function App() {
     setView("dashboard");
   };
 
-  // CSV export helper
   const downloadCSV = (rows, question) => {
     if (!rows || rows.length === 0) return;
     const columns = Object.keys(rows[0]);
@@ -122,7 +134,7 @@ function App() {
     setLoggedIn(false);
   };
 
-  if (!loggedIn) return <AuthPage onAuth={() => setLoggedIn(true)} />;
+  // ── Render ──
 
   return (
     <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
@@ -194,7 +206,7 @@ function App() {
         {/* Scrollable body */}
         <div style={{ flex: 1, overflowY: "auto", padding: "28px 32px" }}>
 
-          {/* ── Query View ── */}
+          {/* Query View */}
           {view === "query" && (
             <div style={{ maxWidth: "860px" }}>
               <QueryBox
@@ -229,7 +241,6 @@ function App() {
 
               {data && data.rows?.length > 0 && (
                 <div className="fade-up">
-                  {/* SQL block */}
                   <div style={{
                     background: "var(--surface)",
                     border: "1px solid var(--border)",
@@ -252,7 +263,6 @@ function App() {
                     }}>{data.sql}</pre>
                   </div>
 
-                  {/* Action buttons */}
                   <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
                     <button
                       onClick={async () => {
@@ -260,7 +270,7 @@ function App() {
                           question: data.question,
                           sql: data.sql
                         });
-                        setSavedQueriesVersion(v => v + 1); // trigger sidebar refresh
+                        setSavedQueriesVersion(v => v + 1);
                       }}
                       style={{
                         padding: "8px 16px", background: "transparent",
@@ -297,7 +307,7 @@ function App() {
             </div>
           )}
 
-          {/* ── Dashboard View ── */}
+          {/* Dashboard View */}
           {view === "dashboard" && (
             <DashboardView
               dashboard={activeDashboard}
@@ -305,7 +315,7 @@ function App() {
             />
           )}
 
-          {/* ── Connection View ── */}
+          {/* Connection View */}
           {view === "connection" && (
             <ConnectionView
               connection={activeConnection}
