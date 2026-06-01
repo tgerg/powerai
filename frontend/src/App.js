@@ -14,7 +14,8 @@ import ConnectionView from "./ConnectionView";
 import ConnectionModal from "./ConnectionModal";
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token"));
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
 
   // Query view state
   const [data, setData] = useState(null);
@@ -35,6 +36,17 @@ function App() {
 
   // View state
   const [view, setView] = useState("query"); // "query" | "dashboard" | "connection"
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && token !== "null" && token !== "undefined") {
+      setLoggedIn(true);
+    }
+    setAuthReady(true);
+  }, []);
+
+  if (!authReady) return null;
+  if (!loggedIn) return <AuthPage onAuth={() => setLoggedIn(true)} />;
 
   // Load dashboards on login
   useEffect(() => {

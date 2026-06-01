@@ -577,6 +577,18 @@ def list_queries():
         return jsonify([dict(r._mapping) for r in rows])
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+    
+@app.route("/queries/<int:query_id>", methods=["DELETE"])
+@jwt_required()
+def delete_query(query_id):
+    user_id = get_jwt_identity()
+    with engine.begin() as conn:
+        conn.execute(
+            text("DELETE FROM saved_queries WHERE id = :id AND user_id = :u"),
+            {"id": query_id, "u": user_id}
+        )
+    return jsonify({"message": "Deleted"})
 
 
 # ─────────────────────────────────────────

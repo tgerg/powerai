@@ -145,31 +145,59 @@ export default function Sidebar({
           </p>
         ) : (
           queries.map((q) => (
-            <button
+            <div
               key={q.id}
-              onClick={() => onSelectQuery(q)}
               style={{
-                width: "100%", padding: "9px 10px",
-                borderRadius: "8px",
-                background: activeQuestion === q.question ? "var(--surface2)" : "transparent",
-                color: activeQuestion === q.question ? "var(--text)" : "var(--text2)",
-                textAlign: "left", fontSize: "12px", lineHeight: "1.4",
-                border: activeQuestion === q.question ? "1px solid var(--border2)" : "1px solid transparent",
-                marginBottom: "2px",
-                display: "flex", alignItems: "flex-start", gap: "8px",
-                transition: "all 0.15s"
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "4px",
+                marginBottom: "2px"
               }}
-              onMouseEnter={e => { if (activeQuestion !== q.question) e.currentTarget.style.background = "var(--surface2)"; }}
-              onMouseLeave={e => { if (activeQuestion !== q.question) e.currentTarget.style.background = "transparent"; }}
             >
-              <span style={{ color: "var(--text3)", marginTop: "1px", flexShrink: 0 }}>⌘</span>
-              <span style={{
-                overflow: "hidden",
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical"
-              }}>{q.question}</span>
-            </button>
+              <button
+                onClick={() => onSelectQuery(q)}
+                style={{
+                  flex: 1, padding: "9px 10px",
+                  borderRadius: "8px",
+                  background: activeQuestion === q.question ? "var(--surface2)" : "transparent",
+                  color: activeQuestion === q.question ? "var(--text)" : "var(--text2)",
+                  textAlign: "left", fontSize: "12px", lineHeight: "1.4",
+                  border: activeQuestion === q.question ? "1px solid var(--border2)" : "1px solid transparent",
+                  display: "flex", alignItems: "flex-start", gap: "8px",
+                  transition: "all 0.15s"
+                }}
+                onMouseEnter={e => { if (activeQuestion !== q.question) e.currentTarget.style.background = "var(--surface2)"; }}
+                onMouseLeave={e => { if (activeQuestion !== q.question) e.currentTarget.style.background = "transparent"; }}
+              >
+                <span style={{ color: "var(--text3)", marginTop: "1px", flexShrink: 0 }}>⌘</span>
+                <span style={{
+                  overflow: "hidden",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical"
+                }}>{q.question}</span>
+              </button>
+              <button
+                onClick={() => {
+                  axios.delete(`/queries/${q.id}`)
+                    .then(() => setQueries(prev => prev.filter(x => x.id !== q.id)))
+                    .catch(() => {});
+                }}
+                title="Delete query"
+                style={{
+                  padding: "9px 6px",
+                  background: "transparent",
+                  border: "1px solid transparent",
+                  color: "var(--text3)",
+                  fontSize: "11px",
+                  borderRadius: "6px",
+                  flexShrink: 0,
+                  cursor: "pointer"
+                }}
+                onMouseEnter={e => { e.target.style.color = "var(--red)"; e.target.style.borderColor = "var(--red)"; }}
+                onMouseLeave={e => { e.target.style.color = "var(--text3)"; e.target.style.borderColor = "transparent"; }}
+              >✕</button>
+            </div>
           ))
         )}
       </div>
