@@ -9,7 +9,7 @@ export default function Sidebar({
   onDeleteDashboard, onRenameDashboard,
   connections, activeConnectionId,
   onSelectConnection, onAddConnection,
-  onDeleteConnection
+  onDeleteConnection, savedQueriesVersion
 }) {
   const [queries, setQueries] = useState([]);
 
@@ -17,7 +17,7 @@ export default function Sidebar({
     axios.get("/queries/list")
       .then((res) => setQueries(res.data))
       .catch(() => {});
-  }, []);
+  }, [savedQueriesVersion]);
 
   return (
     <div style={{

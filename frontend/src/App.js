@@ -21,6 +21,7 @@ function App() {
   const [uploadTrigger, setUploadTrigger] = useState(0);
   const [prefill, setPrefill] = useState("");
   const [activeFile, setActiveFile] = useState(null);
+  const [savedQueriesVersion, setSavedQueriesVersion] = useState(0);
 
   // Dashboard state
   const [dashboards, setDashboards] = useState([]);
@@ -150,6 +151,7 @@ function App() {
         onSelectConnection={(c) => { setActiveConnection(c); setView("connection"); }}
         onAddConnection={() => setShowConnectionModal(true)}
         onDeleteConnection={deleteConnection}
+        savedQueriesVersion={savedQueriesVersion}
       />
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
@@ -266,6 +268,7 @@ function App() {
                           question: data.question,
                           sql: data.sql
                         });
+                        setSavedQueriesVersion(v => v + 1); // trigger sidebar refresh
                       }}
                       style={{
                         padding: "8px 16px", background: "transparent",
