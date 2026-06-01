@@ -1,42 +1,21 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import AuthPage from "./AuthPage";
-import Sidebar from "./Sidebar";
-import QueryBox from "./QueryBox";
-import ChartView from "./ChartView";
-import ResultsTable from "./ResultsTable";
-import Insights from "./Insights";
-import DashboardView from "./DashboardView";
-import Suggestions from "./Suggestions";
-import FileSwitcher from "./FileSwitcher";
-import PinModal from "./PinModal";
-import ConnectionView from "./ConnectionView";
-import ConnectionModal from "./ConnectionModal";
-
 function App() {
+  // ALL state and effects must be here before any returns
   const [loggedIn, setLoggedIn] = useState(false);
   const [authReady, setAuthReady] = useState(false);
-
-  // Query view state
   const [data, setData] = useState(null);
   const [uploadTrigger, setUploadTrigger] = useState(0);
   const [prefill, setPrefill] = useState("");
   const [activeFile, setActiveFile] = useState(null);
-  const [savedQueriesVersion, setSavedQueriesVersion] = useState(0);
-
-  // Dashboard state
   const [dashboards, setDashboards] = useState([]);
   const [activeDashboard, setActiveDashboard] = useState(null);
   const [showPinModal, setShowPinModal] = useState(false);
-
-  // Connection state
   const [connections, setConnections] = useState([]);
   const [activeConnection, setActiveConnection] = useState(null);
   const [showConnectionModal, setShowConnectionModal] = useState(false);
+  const [view, setView] = useState("query");
+  const [savedQueriesVersion, setSavedQueriesVersion] = useState(0);
 
-  // View state
-  const [view, setView] = useState("query"); // "query" | "dashboard" | "connection"
-
+  // Auth check on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token && token !== "null" && token !== "undefined") {
@@ -45,10 +24,7 @@ function App() {
     setAuthReady(true);
   }, []);
 
-  if (!authReady) return null;
-  if (!loggedIn) return <AuthPage onAuth={() => setLoggedIn(true)} />;
-
-  // Load dashboards on login
+  // Load dashboards when logged in
   useEffect(() => {
     if (!loggedIn) return;
     axios.get("/dashboards")
@@ -56,13 +32,17 @@ function App() {
       .catch(() => {});
   }, [loggedIn]);
 
-  // Load connections on login
+  // Load connections when logged in
   useEffect(() => {
     if (!loggedIn) return;
     axios.get("/connections")
       .then(res => setConnections(res.data.connections))
       .catch(() => {});
   }, [loggedIn]);
+
+  // Early returns after all hooks
+  if (!authReady) return null;
+  if (!loggedIn) return <AuthPage onAuth={() => setLoggedIn(true)} />;
 
   const loadConnections = () => {
     axios.get("/connections")
