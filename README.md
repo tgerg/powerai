@@ -1,4 +1,4 @@
-# PowerAI — AI-Powered Analytics Dashboard
+# Power AI — AI-Powered Analytics Dashboard
 
 A full-stack web application that lets non-technical users query, visualize, and dashboard their data using plain English — no SQL required.
 
