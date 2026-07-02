@@ -1,15 +1,16 @@
-# Power AI — AI-Powered Analytics Dashboard
+# PowerAI — AI-Powered Analytics Dashboard
 
 A full-stack web application that lets non-technical users query, visualize, and dashboard their data using plain English — no SQL required.
 
-**Live demo:** *Coming soon*  
-**Built with:** Python, Flask, React, SQLite, Groq (Llama 3.3), SQLAlchemy
+**Live demo:** https://powerai-9r9i.onrender.com  
+**GitHub:** https://github.com/tgerg/powerai  
+**Built with:** Python, Flask, React, PostgreSQL, Groq (Llama 3.1), SQLAlchemy
 
 ---
 
 ## The Problem
 
-At PepsiCo, I watched plant managers wait days for data requests to come back from analysts — questions as simple as "how many units did we ship last year?" required going through multiple people and tools. Power BI exists to solve this, but it requires hours of setup, a steep learning curve (DAX formulas, data gateways, workspace configuration), and a paid license for every person you share with.
+At PepsiCo, I watched operations teams struggle with Power BI's steep learning curve and maintenance overhead — a tool that required technical expertise just to keep dashboards updated, leaving non-technical managers unable to independently access their own data.
 
 PowerAI is built around a simpler idea: upload your data, ask a question in plain English, get an answer in seconds.
 
@@ -20,8 +21,9 @@ PowerAI is built around a simpler idea: upload your data, ask a question in plai
 - **Natural language querying** — type a question, get SQL generated automatically with auto-retry if the first attempt fails
 - **AI insights on upload** — automatically surfaces 5 business-relevant observations the moment a file is loaded
 - **Smart chart selection** — AI picks the right visualization type (bar, line, pie, scatter) for each query result
-- **Persistent named dashboards** — pin query results to dashboards that survive page refreshes
+- **Persistent named dashboards** — pin query results to named dashboards that survive page refreshes
 - **Cross-filtering** — click any chart element to filter all other panels on the dashboard simultaneously
+- **Panel customization** — rename panels, resize them (half, full, tall, large), and reveal the underlying SQL on demand
 - **Live database connections** — connect directly to PostgreSQL or MySQL with encrypted credential storage
 - **Multi-file support** — upload and switch between CSV, Excel (.xlsx), and JSON files
 - **Dataset replacement** — replace a file and all dashboard panels that reference it update automatically
@@ -38,10 +40,11 @@ PowerAI is built around a simpler idea: upload your data, ask a question in plai
 |---|---|
 | Backend | Python, Flask, SQLAlchemy |
 | Frontend | React, Recharts, Axios |
-| AI | Groq API (Llama 3.3 70B) |
-| Database | SQLite (local), PostgreSQL (production) |
+| AI | Groq API (Llama 3.1 8B) |
+| Database | SQLite (local), PostgreSQL via Supabase (production) |
 | Auth | Flask-JWT-Extended, Flask-Bcrypt |
 | Encryption | Python cryptography (Fernet) |
+| Hosting | Render (web service) |
 
 ---
 
@@ -66,7 +69,7 @@ ai-ops-dashboard/
 **How a query works:**
 1. User types a plain English question
 2. Flask validates the input (rejects gibberish)
-3. Groq/Llama 3.3 converts the question to SQL
+3. Groq/Llama 3.1 converts the question to SQL
 4. SQL runs against the user's data table in SQLite/PostgreSQL
 5. If it fails, the error is fed back to the LLM for auto-correction (up to 3 attempts)
 6. Result is returned with a chart type recommendation
@@ -107,23 +110,26 @@ Visit `http://localhost:3000` for the React dev server or `http://localhost:5001
 
 ## Key Engineering Decisions
 
-**Why Groq over OpenAI?**  
-Groq's inference speed is significantly faster than OpenAI for this use case — sub-second SQL generation keeps the UX feeling responsive. Llama 3.3 70B handles SQL generation, chart recommendation, insight generation, and input validation reliably.
+**Why Groq over OpenAI?**
+Groq's inference speed is significantly faster than OpenAI for this use case — near-instant SQL generation keeps the UX feeling responsive. Llama 3.1 8B handles SQL generation, chart recommendation, insight generation, and input validation reliably at no cost.
 
-**Why SQLite locally?**  
+**Why SQLite locally?**
 Zero-config setup for development. The SQLAlchemy abstraction means switching to PostgreSQL for production is a single connection string change with no code modifications.
 
-**Per-user table isolation**  
+**Per-user table isolation**
 Each user's uploaded data is stored in a separate table named `user_{id}_{filename}` rather than a shared table with a user_id column. This prevents accidental cross-user data exposure and makes it simple to drop a user's data cleanly.
 
-**Encrypted external credentials**  
+**Encrypted external credentials**
 PostgreSQL and MySQL connection passwords are encrypted at rest using Fernet symmetric encryption before being stored in the database.
+
+**Input validation before LLM calls**
+Every query is validated by the LLM before SQL generation — gibberish inputs are rejected immediately, saving unnecessary API calls and giving users clear error messages.
 
 ---
 
 ## What's Next
 
-- [ ] Deploy to Render with PostgreSQL
+- [x] Deploy to Render with PostgreSQL (Supabase)
 - [ ] Public shareable dashboard links
 - [ ] Scheduled email reports
 - [ ] Google Sheets integration
