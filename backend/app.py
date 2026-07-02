@@ -91,7 +91,7 @@ def validate_question(question):
     Reply with only "yes" if it is gibberish, or "no" if it could be a reasonable request in any context.
     """
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=[{"role": "user", "content": prompt}]
     )
     return response.choices[0].message.content.strip().lower().startswith("yes")
@@ -110,7 +110,7 @@ def recommend_chart_type(question, columns, sample_rows):
     """
     try:
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=[{"role": "user", "content": prompt}]
         )
         chart_type = response.choices[0].message.content.strip().lower()
@@ -410,7 +410,7 @@ def query():
             Only return SQL. No explanation.
             """
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=[{"role": "user", "content": prompt}]
         )
         return clean_sql(response.choices[0].message.content.strip())
@@ -458,7 +458,7 @@ def query_filtered():
         - Only return SQL. No explanation.
         """
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=[{"role": "user", "content": prompt}]
         )
         filtered_sql = clean_sql(response.choices[0].message.content.strip())
@@ -500,7 +500,7 @@ def insights():
     """
     try:
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=[{"role": "user", "content": prompt}]
         )
         raw = response.choices[0].message.content.strip().replace("```json", "").replace("```", "").strip()
@@ -538,7 +538,7 @@ def suggestions():
     """
     try:
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=[{"role": "user", "content": prompt}]
         )
         raw = response.choices[0].message.content.strip().replace("```json", "").replace("```", "").strip()
@@ -891,7 +891,7 @@ def query_connection(conn_id):
             else:
                 prompt = f"You are a {db_dialect} expert. Table '{table_name}' has columns: {schema}. Convert this to a valid {db_dialect} SQL query: \"{q}\". Only return SQL."
             response = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="openai/gpt-oss-120b",
                 messages=[{"role": "user", "content": prompt}]
             )
             return clean_sql(response.choices[0].message.content.strip())
@@ -949,7 +949,7 @@ def connection_insights(conn_id):
         Respond ONLY with a JSON array of strings, no markdown.
         """
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=[{"role": "user", "content": prompt}]
         )
         raw = response.choices[0].message.content.strip().replace("```json", "").replace("```", "").strip()
@@ -989,7 +989,7 @@ def connection_suggestions(conn_id):
         Respond ONLY with a JSON array of strings, no markdown.
         """
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=[{"role": "user", "content": prompt}]
         )
         raw = response.choices[0].message.content.strip().replace("```json", "").replace("```", "").strip()
